@@ -20,7 +20,20 @@ IS_ALLOW = utils.get_bool_env(os.getenv("IS_ALLOW", "True"))
 vibot = telebot.async_telebot.AsyncTeleBot(API_TOKEN, "Markdown")
 
 
-@vibot.message_handler
+@vibot.message_handler(
+    func=lambda message: True,
+    content_types=[
+        "audio",
+        "photo",
+        "voice",
+        "video",
+        "document",
+        "text",
+        "location",
+        "contact",
+        "sticker",
+    ],
+)
 async def echo_message(message):
     try:
         if str(message.from_user.id) in TARGET_USERS and IS_ALLOW:
