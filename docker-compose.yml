@@ -1,7 +1,7 @@
 name: "vivobot"
 
 services:
-  django:
+  bot_python:
     build: .
     container_name: vivobot-py
     env_file:
