@@ -1,0 +1,15 @@
+name: "vivobot"
+
+services:
+  django:
+    build: .
+    container_name: vivobot-py
+    env_file:
+      - ./.env
+    restart: always
+    volumes:
+      - ./for_docker/data:/bot/data
+    profiles:
+      - prod
+      - dev
+
