@@ -1,0 +1,48 @@
+name: CI/CD Pipeline
+
+on: [push, pull_request]
+
+jobs:
+  flake8-check:
+    name: Flake8 Lint Check
+    runs-on: ubuntu-latest
+    container:
+      image: registry.gitlab.com/pipeline-components/flake8:latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Run Flake8
+        run: flake8 --verbose .
+
+  black-check:
+    name: Black Code Format Check
+    runs-on: ubuntu-latest
+    container:
+      image: registry.gitlab.com/pipeline-components/black:latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Run Black
+        run: black --check --verbose .
+
+  prod-deploy:
+    name: Deploy project to server
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: [flake8-check, black-check]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Deploy to server
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SERVER_IP }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          cd ~/smartphone_vivo
+          docker compose down
+          git reset --hard origin/main  
+          git pull origin main
+          docker compose --profile prod up --build -d
