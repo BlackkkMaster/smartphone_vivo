@@ -52,7 +52,7 @@ async def echo_message(message):
             await vibot.reply_to(
                 message,
                 vivopack.messages_pack[
-                    randint(1, len(vivopack.messages_pack) - 1)
+                    randint(0, len(vivopack.messages_pack) - 1)
                 ],
             )
     except Exception as e:
